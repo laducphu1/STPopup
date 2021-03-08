@@ -183,6 +183,24 @@ static NSMutableSet *_retainedPopupControllers;
     _safeAreaInsets = safeAreaInsets;
     _didOverrideSafeAreaInsets = YES;
 }
+- (void)setKeyboardHandlingEnabled:(BOOL)keyboardHandlingEnabled {
+    BOOL wasKeyboardHandlingEnabled = _keyboardHandlingEnabled;
+    _keyboardHandlingEnabled = keyboardHandlingEnabled;
+    // Only do something if the value changes
+    if (wasKeyboardHandlingEnabled != keyboardHandlingEnabled) {
+        NSNotificationCenter *notificationCenter = [NSNotificationCenter defaultCenter];
+        // Enable or disable the keyboard handling by subscribing or unsubscribing from keyboard notifications
+        if (wasKeyboardHandlingEnabled) {
+            [notificationCenter removeObserver:self name:UIKeyboardWillShowNotification object:nil];
+            [notificationCenter removeObserver:self name:UIKeyboardWillChangeFrameNotification object:nil];
+            [notificationCenter removeObserver:self name:UIKeyboardWillHideNotification object:nil];
+        } else {
+            [notificationCenter addObserver:self selector:@selector(keyboardWillShow:) name:UIKeyboardWillShowNotification object:nil];
+            [notificationCenter addObserver:self selector:@selector(keyboardWillShow:) name:UIKeyboardWillChangeFrameNotification object:nil];
+            [notificationCenter addObserver:self selector:@selector(keyboardWillHide:) name:UIKeyboardWillHideNotification object:nil];
+        }
+    }
+}
 
 #pragma mark - Observers
 
@@ -199,11 +217,6 @@ static NSMutableSet *_retainedPopupControllers;
     
     // Observe orientation change
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(orientationDidChange) name:UIApplicationDidChangeStatusBarOrientationNotification object:nil];
-    
-    // Observe keyboard
-    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(keyboardWillShow:) name:UIKeyboardWillShowNotification object:nil];
-    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(keyboardWillShow:) name:UIKeyboardWillChangeFrameNotification object:nil];
-    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(keyboardWillHide:) name:UIKeyboardWillHideNotification object:nil];
     
     // Observe responder change
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(firstResponderDidChange) name:STPopupFirstResponderDidChangeNotification object:nil];
@@ -606,6 +619,7 @@ static NSMutableSet *_retainedPopupControllers;
     [self setupNavigationBar];
     
     _transitioningSlideVertical = [STPopupControllerTransitioningSlideVertical new];
+    self.keyboardHandlingEnabled = YES;
     _transitioningFade = [STPopupControllerTransitioningFade new];
 }
 

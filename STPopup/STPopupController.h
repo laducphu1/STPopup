@@ -122,6 +122,8 @@ typedef NS_ENUM(NSUInteger, STPopupTransitionStyle) {
  */
 @property (nullable, nonatomic, strong) UIView *backgroundView;
 
+@property (nonatomic, assign) BOOL keyboardHandlingEnabled;
+
 /**
  Container view which is containing the navigation bar and content of top most view controller.
  By default its background color is set to white and clipsToBounds is set to YES.
