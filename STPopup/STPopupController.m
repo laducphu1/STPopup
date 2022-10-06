@@ -144,6 +144,15 @@ static NSMutableSet *_retainedPopupControllers;
     return self;
 }
 
+- (instancetype)initWithRootViewController:(UIViewController *)rootViewController presentationStyle:(UIModalPresentationStyle)modalPresentationStyle {
+    self.enableCustomPresentationStyle = true;
+    self.presentatioinStyle = modalPresentationStyle;
+    if (self = [self init]) {
+        [self pushViewController:rootViewController animated:NO];
+    }
+    return self;
+}
+
 - (void)dealloc
 {
     [self destroyObservers];
@@ -608,7 +617,11 @@ static NSMutableSet *_retainedPopupControllers;
     _containerViewController = [STPopupContainerViewController new];
     _containerViewController.view.backgroundColor = [UIColor clearColor];
     if ([[[UIDevice currentDevice] systemVersion] compare:@"8.0" options:NSNumericSearch] != NSOrderedAscending) {
-        _containerViewController.modalPresentationStyle = UIModalPresentationOverCurrentContext;
+        if (_enableCustomPresentationStyle) {
+            _containerViewController.modalPresentationStyle = _presentatioinStyle;
+        } else {
+            _containerViewController.modalPresentationStyle = UIModalPresentationOverCurrentContext;
+        }
     }
     else {
         _containerViewController.modalPresentationStyle = UIModalPresentationCustom;
