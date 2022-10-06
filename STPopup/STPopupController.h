@@ -124,6 +124,10 @@ typedef NS_ENUM(NSUInteger, STPopupTransitionStyle) {
 
 @property (nonatomic, assign) BOOL keyboardHandlingEnabled;
 
+@property (nonatomic, assign) BOOL enableCustomPresentationStyle;
+
+@property (nonatomic, assign) UIModalPresentationStyle presentatioinStyle;
+
 /**
  Container view which is containing the navigation bar and content of top most view controller.
  By default its background color is set to white and clipsToBounds is set to YES.
@@ -144,6 +148,8 @@ typedef NS_ENUM(NSUInteger, STPopupTransitionStyle) {
  Init the popup with root view controller.
  */
 - (instancetype)initWithRootViewController:(UIViewController *)rootViewController;
+
+- (instancetype)initWithRootViewController:(UIViewController *)rootViewController presentationStyle: (UIModalPresentationStyle) modalPresentationStyle;
 
 /**
  Present the popup with transition style on a given view controller.
